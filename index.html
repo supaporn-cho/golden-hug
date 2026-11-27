@@ -168,7 +168,6 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .tip b{font-weight:600}
 .fig svg circle.dot{transition:r .15s}
 .fig{cursor:crosshair}
-.tx.flash{animation:fl 1.4s ease}@keyframes fl{0%,40%{background:var(--goldbg)}100%{background:transparent}}
 .statbtn{all:unset;cursor:pointer;display:block}
 .statbtn:focus-visible{outline:2px solid var(--gold);border-radius:6px}
 .statbtn span::after{content:" ⇄";color:var(--faint)}
@@ -367,10 +366,10 @@ function showTip(i){const tip=$('tip');svg.querySelectorAll('circle.dot').forEac
   const c=svg.querySelector('circle.dot[data-i="'+i+'"]');if(c)c.setAttribute('r',q.r+3);
   tip.innerHTML='<b>'+fmtD(x.d,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</b><br>'+n(x.thb)+' ฿ @ $'+n(x.p)+'<br><span style="color:'+(pl>=0?'var(--upc,#7ff0bd)':'#ffa0ad')+'">'+sg(pl)+' ฿</span>';
   tip.hidden=false;const W=svg.clientWidth,lx=Math.min(Math.max(q.x,70),W-70);tip.style.left=lx+'px';tip.style.top=q.y+'px';tip.style.transform=q.y<80?'translate(-50%,14px)':''}
-svg.addEventListener('pointermove',e=>showTip(nearest(e)));
-svg.addEventListener('pointerleave',()=>showTip(-1));
-svg.addEventListener('click',e=>{const i=nearest(e);if(i<0)return;const row=document.querySelector('.tx[data-id="'+CSS.escape(String(pts[i].t.id))+'"]');
-  if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.classList.remove('flash');void row.offsetWidth;row.classList.add('flash')}});
+svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')showTip(nearest(e))});
+svg.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')showTip(-1)});
+svg.addEventListener('click',e=>{const i=nearest(e);showTip(i===hot&&e.pointerType!=='mouse'?-1:i)});
+document.addEventListener('pointerdown',e=>{if(hot>=0&&!$('fig').contains(e.target))showTip(-1)});
 
 // ---- count-up ----
 function countTo(el,to){const from=+el.dataset.v||0;el.dataset.v=to;
