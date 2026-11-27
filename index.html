@@ -11,8 +11,10 @@
 <meta name="theme-color" content="#f4f4f2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <title>Golden Hug</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231a1a1a'/%3E%3Ccircle cx='32' cy='33' r='13' fill='%23f5c451'/%3E%3Cpath d='M14 30c0 12 8 21 18 21s18-9 18-21' fill='none' stroke='%23ff9fb4' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231a1a1a'/%3E%3Ccircle cx='32' cy='33' r='13' fill='%23f5c451'/%3E%3Cpath d='M14 30c0 12 8 21 18 21s18-9 18-21' fill='none' stroke='%23ff9fb4' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" as="image" href="assets/goldie-pile.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -38,24 +40,24 @@ button{cursor:pointer}
 
 .bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .brand{display:flex;align-items:center;gap:10px;margin-right:auto;font-weight:700;font-size:20px;letter-spacing:-.01em}
-.brand svg{width:34px;height:34px;flex:none}
+.brand img{width:36px;height:36px;flex:none;border-radius:10px}
 .chip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:13px;color:var(--mute);max-width:52vw}
 .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--mute);flex:none}
 .chip.ok i{background:var(--up)}.chip.err i{background:var(--dn)}.chip.busy i{background:var(--gold)}
 .iconbtn{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;flex:none}
-.iconbtn svg{width:22px;height:22px}
+.iconbtn img{width:26px;height:26px}
 
 .wrap{max-width:1180px;margin:0 auto;padding:4px max(16px,env(safe-area-inset-left)) 0;display:grid;gap:16px}
 @media(min-width:960px){.wrap{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start;gap:24px}.left{position:sticky;top:76px}}
 .left,.right{display:grid;gap:16px}
 
 .hero{position:relative;overflow:hidden;background:var(--plum);color:#fff;border-radius:28px;padding:22px 22px 20px;box-shadow:0 12px 32px rgba(0,0,0,.25);border:1px solid light-dark(transparent,#2c2c2c)}
-.hero::before{content:"";position:absolute;right:-46px;top:-56px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe08a,var(--gold) 45%,#c9971f 100%);opacity:.95}
-.hero::after{content:"";position:absolute;right:-70px;top:-26px;width:190px;height:130px;border-radius:50%;border:12px solid var(--pink);border-top-color:transparent;border-left-color:transparent;transform:rotate(18deg);opacity:.9}
-.hero>*{position:relative;z-index:1}
+.mascot{position:absolute;right:10px;top:8px;width:clamp(96px,26vw,136px);height:auto;z-index:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,.45));transition:transform .4s}
+.hero:hover .mascot{transform:rotate(-4deg) scale(1.03)}
+.hero>*:not(.mascot){position:relative;z-index:2}
 .lab{font-size:14px;opacity:.8}
-.big{font-weight:700;font-size:clamp(40px,11vw,56px);line-height:1.05;letter-spacing:-.02em;margin:6px 0 8px;max-width:calc(100% - 70px)}
+.big{font-weight:700;font-size:clamp(34px,9.6vw,56px);line-height:1.05;letter-spacing:-.02em;margin:6px 0 8px;max-width:calc(100% - clamp(96px,26vw,136px))}
 .hero .big.up{color:var(--upc)}.hero .big.dn{color:var(--dnc)}
 .pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:99px;background:rgba(255,255,255,.14);font-weight:600;font-size:14px}
 .sub2{font-size:14px;opacity:.85;margin-top:12px}
@@ -72,13 +74,12 @@ button{cursor:pointer}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
 .price{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px}
-.coin{width:40px;height:40px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 35%,#ffe08a,var(--gold) 50%,#c9971f);display:grid;place-items:center;font-weight:700;font-size:13px;color:#5a3d00}
+.coin{width:44px;height:44px;flex:none}
 .price .m{flex:1}
 .price .m b{font-size:18px;font-weight:700}
 .price .m small{display:block;font-size:13px;color:var(--mute)}
 .price .m small.err{color:var(--dn)}
-.refresh svg{transition:transform .6s}
-.spin svg{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+.spin img{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
 
 .chart{padding:16px 12px 10px}
 .chart h3{margin:0 6px 4px;font-size:16px;font-weight:600}
@@ -94,19 +95,19 @@ button{cursor:pointer}
 .tx{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;padding:12px 10px;border-radius:14px}
 .tx:hover{background:var(--soft)}
 .tx+.tx{border-top:1px solid var(--line)}
-.tx .ic{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--gold2)}
+.tx .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--gold) 22%,transparent);color:var(--gold2)}
 .tx .ic.s{background:color-mix(in srgb,var(--pink) 26%,transparent);color:var(--dn)}
-.tx .ic svg{width:20px;height:20px}
+.tx .ic img{width:32px;height:32px}
 .tx .m{flex:1}
 .tx .m b{display:block;font-weight:600}
 .tx .m small{color:var(--mute);font-size:13px;display:block}
 .tx .r{text-align:right;font-weight:600;padding-left:6px;align-self:flex-start;padding-top:2px}
 .tx .r small{display:block;font-weight:400;font-size:12px;color:var(--mute)}
 .empty{text-align:center;padding:36px 16px;color:var(--mute)}
-.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.empty img{display:block;margin:0 auto 10px;width:150px;height:auto}.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
 
 .fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:6;display:flex;align-items:center;gap:8px;height:56px;padding:0 22px 0 18px;border-radius:99px;border:0;background:var(--btn);color:var(--btnInk);font-weight:600;font-size:16px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
-.fab svg{width:22px;height:22px}
+.fab img{width:26px;height:26px}
 
 dialog{border:0;padding:0;background:var(--card);color:var(--ink);width:min(520px,100%);max-height:92vh;border-radius:26px;box-shadow:0 20px 60px rgba(20,0,30,.35)}
 dialog::backdrop{background:rgba(0,0,0,.45);backdrop-filter:blur(2px)}
@@ -146,14 +147,15 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
 </head>
 <body>
 <header class="bar">
-  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#1a1a1a"/><circle cx="32" cy="33" r="13" fill="#f5c451"/><circle cx="28" cy="29" r="4" fill="#ffe7a3"/><path d="M14 30c0 12 8 21 18 21s18-9 18-21" fill="none" stroke="#ff9fb4" stroke-width="6" stroke-linecap="round"/></svg>Golden Hug</div>
+  <div class="brand"><img src="assets/logo.webp" alt="" width="36" height="36">Golden Hug</div>
   <button class="chip" id="syncChip" type="button"><i></i><span id="saveState">กำลังโหลด…</span></button>
-  <button class="iconbtn" id="menuBtn" type="button" aria-label="ตั้งค่า"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+  <button class="iconbtn" id="menuBtn" type="button" aria-label="ตั้งค่า"><img src="assets/i-settings.webp" alt="" width="26" height="26"></button>
 </header>
 
 <main class="wrap">
   <div class="left">
     <section class="hero" aria-live="polite">
+      <img class="mascot" id="mascot" src="assets/goldie-pile.webp" alt="">
       <div class="lab">กำไร/ขาดทุนตอนนี้</div>
       <div class="big num" id="pl">–</div>
       <span class="pill num" id="plp">–</span>
@@ -170,9 +172,9 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
     </section>
 
     <section class="card price">
-      <div class="coin">Au</div>
+      <img class="coin" src="assets/au-coin.webp" alt="" width="44" height="44">
       <div class="m"><b class="num" id="curTxt">–</b><small id="live">กำลังดึงราคา…</small></div>
-      <button class="iconbtn refresh" id="refresh" type="button" aria-label="ดึงราคาล่าสุด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></button>
+      <button class="iconbtn refresh" id="refresh" type="button" aria-label="ดึงราคาล่าสุด"><img src="assets/i-refresh.webp" alt="" width="26" height="26"></button>
     </section>
 
     <section class="card chart">
@@ -188,7 +190,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
   </div>
 </main>
 
-<button class="fab" id="addBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>บันทึกรายการ</button>
+<button class="fab" id="addBtn" type="button"><img src="assets/i-add.webp" alt="" width="26" height="26">บันทึกรายการ</button>
 
 <dialog id="txDlg"><form class="sh" id="form" method="dialog">
   <div class="grab"></div>
@@ -218,7 +220,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
   <p class="hint" style="margin-top:4px">ราคา spot จาก gold-api.com และเรทเงินจาก open.er-api.com อาจต่างจากราคาในแอป MTS เล็กน้อย แก้ราคาเองได้ในช่องด้านบน</p>
 
   <div class="sec" id="syncSec">
-    <h4>ซิงก์คอมกับมือถือ</h4>
+    <h4 style="display:flex;align-items:center;gap:8px"><img src="assets/i-sync.webp" alt="" width="30" height="30">ซิงก์คอมกับมือถือ</h4>
     <p id="syncInfo">เก็บรายการไว้ใน GitHub Gist แบบ secret ในบัญชีของคุณ ทุกเครื่องที่ใส่โทเคนเดียวกันจะเห็นข้อมูลชุดเดียวกัน</p>
     <div id="tokBox">
       <ol><li>สร้างโทเคนที่ <a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=Golden%20Hug" target="_blank" rel="noopener">github.com/settings/tokens</a> ติ๊กแค่ gist</li><li>วางโทเคนด้านล่างแล้วกดเชื่อมต่อ ครั้งเดียวต่อเครื่อง</li></ol>
@@ -257,11 +259,12 @@ function calc(){let oz=0,cost=0,real=0;
   for(const x of sorted()){if(x.t==='buy'){oz+=x.oz;cost+=x.thb}else{const avg=oz?cost/oz:0,q=Math.min(x.oz,oz);real+=x.thb-avg*q;cost-=avg*q;oz-=q}}
   const val=oz*S.cur*S.fx*feeK();return{oz,cost,real,val,pl:val-cost,avgUsd:oz?cost/oz/S.fx:0,be:oz?cost/(oz*S.fx*feeK()):0}}
 const fmtD=(d,o)=>{const x=new Date(d);return isNaN(x)?esc(d):x.toLocaleString('th-TH',o)};
-const icBuy='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
-const icSell='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
+const icBuy='<img src="assets/i-buy.webp" alt="" width="30" height="30">',icBuyOld='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>';
+const icSell='<img src="assets/i-sell.webp" alt="" width="30" height="30">',icSellOld='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
 function render(){
   const r=calc(),c=v=>v>=0?'up':'dn',has=r.oz>0&&S.cur>0;
   $('pl').textContent=has?sg(r.pl)+' ฿':'–';$('pl').className='big num '+(has?c(r.pl):'');
+  $('mascot').src='assets/'+(has?(r.pl>=0?'goldie-up':'goldie-hug'):'goldie-pile')+'.webp';
   $('plp').textContent=has&&r.cost?sg(r.pl/r.cost*100)+'%':'ยังไม่มีทอง';
   $('valLine').textContent=has?'มูลค่า '+n(r.val)+' ฿ จากเงินลงทุน '+n(r.cost)+' ฿':'เพิ่มรายการซื้อแรกเพื่อเริ่มต้น';
   if(has){const gap=S.cur-r.be,pct=gap/r.be*100;
@@ -280,7 +283,7 @@ function render(){
     html+=`<button class="tx" type="button" data-id="${esc(x.id)}"><span class="ic ${x.t==='sell'?'s':''}">${x.t==='sell'?icSell:icBuy}</span>
       <span class="m"><b class="num">${x.t==='buy'?'ซื้อ':'ขาย'} ${n(x.thb)} ฿</b><small>${fmtD(x.d,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</small><small class="num">$${n(x.p)} · ${n(x.oz,4)} oz</small></span>
       <span class="r num ${pl==null?'':c(pl)}">${pl==null?'—':sg(pl)}<small>${pl==null?'':sg(pl/x.thb*100,1)+'%'}</small></span></button>`}
-  $('rows').innerHTML=html?html+'</div>':'<div class="empty"><b>ยังไม่มีรายการ</b>กด "บันทึกรายการ" เพื่อเพิ่มการซื้อครั้งแรก</div>';
+  $('rows').innerHTML=html?html+'</div>':'<div class="empty"><img src="assets/goldie-chest.webp" alt="" width="150"><b>ยังไม่มีรายการ</b>กด "บันทึกรายการ" เพื่อเพิ่มการซื้อครั้งแรก</div>';
   $('lgCur').textContent=S.cur?n(S.cur):'';$('lgAvg').textContent=r.avgUsd?n(r.avgUsd):'';
   draw()}
 
