@@ -60,6 +60,7 @@ form.add{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:var(--g
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;display:none;gap:12px;align-items:center}
 .toast button{min-height:32px;background:transparent;color:var(--bg);border-color:var(--mute)}
 .scroll{overflow-x:auto}
+.sync{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:20px}.sync p,.sync ol{font-size:15px;margin:6px 0}.sync a{color:var(--gold)}
 .chk{flex-direction:row;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--ink)}.chk input{width:20px;height:20px}
 .live{font-size:14px;margin:12px 0 0;color:var(--mute)}.live.ok{color:var(--up)}.live.err{color:var(--dn)}
 label.file{display:inline-flex;vertical-align:middle;font-size:13px;flex-direction:row;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer;padding:0 10px;min-height:36px}
@@ -71,7 +72,13 @@ label.file{display:inline-flex;vertical-align:middle;font-size:13px;flex-directi
 </head>
 <body>
 <section class="band hero"><div class="wrap">
-  <div class="top"><h1>Golden Hug <span style="font-size:.5em;font-weight:500;color:var(--mute)">· บันทึกทอง MTS-GOLD</span></h1><span class="sub"><span id="saveState">ข้อมูลเก็บในเบราว์เซอร์นี้</span> · <button class="ic" id="exp" type="button">สำรองข้อมูล</button> <label class="ic file">นำเข้า<input id="imp" type="file" accept=".json,application/json" hidden></label></span></div>
+  <div class="top"><h1>Golden Hug <span style="font-size:.5em;font-weight:500;color:var(--mute)">· บันทึกทอง MTS-GOLD</span></h1><span class="sub"><span id="saveState">ข้อมูลเก็บในเบราว์เซอร์นี้</span> · <button class="ic" id="syncBtn" type="button">ซิงก์</button> <button class="ic" id="exp" type="button">สำรองข้อมูล</button> <label class="ic file">นำเข้า<input id="imp" type="file" accept=".json,application/json" hidden></label></span></div>
+  <div class="sync" id="syncPanel" hidden>
+    <h2>ซิงก์ข้อมูลระหว่างเครื่อง</h2>
+    <p>รายการซื้อ-ขายจะเก็บไว้ใน GitHub Gist แบบ secret ในบัญชีของคุณเอง ทุกเครื่องที่ใส่โทเคนเดียวกันจะเห็นข้อมูลชุดเดียวกัน โทเคนเก็บอยู่ในเบราว์เซอร์ของเครื่องนั้นเท่านั้น</p>
+    <ol><li>สร้างโทเคนที่ <a href="https://github.com/settings/tokens/new?scopes=gist&amp;description=Golden%20Hug" target="_blank" rel="noopener">github.com/settings/tokens/new</a> — ติ๊กแค่ <b>gist</b> แล้วกด Generate token</li><li>คัดลอกโทเคน (ขึ้นต้นด้วย ghp_) มาวางด้านล่าง แล้วกดเชื่อมต่อ — ทำครั้งเดียวต่อเครื่อง</li></ol>
+    <div class="inputs" style="margin-top:8px"><label style="flex:1 1 260px">โทเคน GitHub<input id="tok" type="password" autocomplete="off" style="width:100%"></label><button class="pri" id="tokSave" type="button">เชื่อมต่อ</button><button id="tokDel" type="button">ยกเลิกการเชื่อมต่อเครื่องนี้</button></div>
+  </div>
   <div class="grid">
     <div class="read">
       <div><div class="sub">กำไร/ขาดทุนตอนนี้ (ยังไม่ขาย)</div><div class="big" id="pl">–</div><div class="pct" id="plp"></div></div>
@@ -129,6 +136,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const n=(v,d=2)=>Number(v).toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});
 const sg=v=>(v>0?'+':v<0?'−':'')+n(Math.abs(v));
 const impliedFx=()=>{const b=S.tx.filter(x=>x.t==='buy');const a=b.reduce((s,x)=>s+x.thb,0),c=b.reduce((s,x)=>s+x.oz*x.p,0);return c?a/c:34};
+if(S.dts==null)S.dts=S.ts||0;
 if(!S.fx)S.fx=+impliedFx().toFixed(2);
 const sorted=()=>[...S.tx].sort((a,b)=>a.d<b.d?-1:1);
 function calc(){let oz=0,cost=0,real=0;const fee=(S.fee||0)/100;
@@ -167,7 +175,31 @@ function draw(){const W=svg.clientWidth,H=svg.clientHeight;if(!W)return;const tx
 const ro=new ResizeObserver(draw);ro.observe(svg);
 
 let undo=null;
-function save(){S.ts=Date.now();try{localStorage.setItem('goldbook',JSON.stringify(S));$('saveState').textContent='บันทึกในเบราว์เซอร์นี้แล้ว'}catch(e){$('saveState').textContent='บันทึกไม่ได้ — กดสำรองข้อมูลไว้'}}
+function saveLocal(){S.ts=Date.now();try{localStorage.setItem('goldbook',JSON.stringify(S))}catch(e){}}
+function save(){S.dts=Date.now();saveLocal();if(tok)schedulePush();else $('saveState').textContent='บันทึกในเบราว์เซอร์นี้แล้ว'}
+// ---- sync via GitHub Gist ----
+const FILE='golden-hug.json';let tok='',gid='',pushT=null,busy=false;
+try{tok=localStorage.getItem('gh_tok')||'';gid=localStorage.getItem('gh_gist')||''}catch(e){}
+const setSync=t=>{$('saveState').textContent=t};
+async function gh(path,opt={}){const r=await fetch('https://api.github.com'+path,{...opt,cache:'no-store',headers:{Authorization:'Bearer '+tok,Accept:'application/vnd.github+json',...(opt.body?{'Content-Type':'application/json'}:{})}});
+  if(!r.ok){const e=new Error(r.status);e.status=r.status;throw e}return r.json()}
+async function findGist(){for(let p=1;p<=5;p++){const l=await gh('/gists?per_page=100&page='+p);const g=l.find(x=>x.files&&x.files[FILE]);if(g)return g.id;if(l.length<100)break}return ''}
+async function push(){const body={description:'Golden Hug data (do not edit)',files:{[FILE]:{content:JSON.stringify({tx:S.tx,fee:S.fee||0,dts:S.dts||0})}}};
+  if(gid)await gh('/gists/'+gid,{method:'PATCH',body:JSON.stringify(body)});
+  else{const g=await gh('/gists',{method:'POST',body:JSON.stringify({...body,public:false})});gid=g.id;try{localStorage.setItem('gh_gist',gid)}catch(e){}}}
+const hhmm=()=>new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+function syncErr(e){setSync(e.status===401?'โทเคนใช้ไม่ได้ — กดซิงก์เพื่อใส่ใหม่':'ซิงก์ไม่สำเร็จ (ข้อมูลยังอยู่ในเครื่องนี้)')}
+async function pull(){if(!tok||busy)return;busy=true;try{setSync('กำลังซิงก์…');
+  if(!gid){gid=await findGist();if(gid)try{localStorage.setItem('gh_gist',gid)}catch(e){}}
+  if(!gid){await push()}else{let g;try{g=await gh('/gists/'+gid)}catch(e){if(e.status===404){gid='';localStorage.removeItem('gh_gist');busy=false;return pull()}throw e}
+    const f=g.files[FILE];if(!f){await push()}else{const txt=f.truncated?await (await fetch(f.raw_url)).text():f.content;const d=JSON.parse(txt);
+      if((d.dts||0)>(S.dts||0)){S.tx=d.tx||[];S.fee=d.fee||0;S.dts=d.dts;saveLocal();render()}else if((S.dts||0)>(d.dts||0))await push()}}
+  setSync('ซิงก์แล้ว '+hhmm())}catch(e){syncErr(e)}busy=false}
+function schedulePush(){setSync('รอซิงก์…');clearTimeout(pushT);pushT=setTimeout(async()=>{if(busy){schedulePush();return}busy=true;try{await push();setSync('ซิงก์แล้ว '+hhmm())}catch(e){syncErr(e)}busy=false},1200)}
+$('syncBtn').addEventListener('click',()=>{const p=$('syncPanel');p.hidden=!p.hidden;$('tok').value='';if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'})});
+$('tokSave').addEventListener('click',async()=>{const v=$('tok').value.trim();if(!v)return;tok=v;try{await gh('/gists?per_page=1');localStorage.setItem('gh_tok',tok);$('tok').value='';$('syncPanel').hidden=true;await pull()}catch(e){tok='';setSync(e.status===401?'โทเคนไม่ถูกต้อง':'เชื่อมต่อไม่สำเร็จ')}});
+$('tokDel').addEventListener('click',()=>{tok='';gid='';try{localStorage.removeItem('gh_tok');localStorage.removeItem('gh_gist')}catch(e){}$('syncPanel').hidden=true;setSync('ไม่ได้ซิงก์ — ข้อมูลเก็บในเครื่องนี้')});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull()});
 // ---- live prices ----
 async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
 async function refresh(){const st=$('live');st.textContent='กำลังดึงราคา…';st.className='live';
@@ -176,13 +208,13 @@ async function refresh(){const st=$('live');st.textContent='กำลังด�
   if(g.status==='fulfilled'&&+g.value.price>0){S.cur=+(+g.value.price).toFixed(2);const t=new Date(g.value.updatedAt||Date.now());msg.push('ทอง '+n(S.cur)+' USD/oz ('+t.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+')')}else msg.push('ดึงราคาทองไม่ได้');
   if($('autoFx').checked){if(f.status==='fulfilled'&&f.value.rates&&f.value.rates.THB){S.fx=+f.value.rates.THB.toFixed(2);msg.push('เรท '+S.fx+' บาท/USD')}else msg.push('ดึงเรทเงินไม่ได้')}
   const ok=g.status==='fulfilled';st.textContent=msg.join(' · ');st.className='live '+(ok?'ok':'err');
-  if(!ok)st.textContent+=' — กรอกราคาเองได้';render();save()}
+  if(!ok)st.textContent+=' — กรอกราคาเองได้';render();saveLocal()}
 $('refresh').addEventListener('click',refresh);
-let tick=setInterval(()=>{if($('auto').checked&&document.visibilityState==='visible')refresh()},60000);
+let tick=setInterval(()=>{if(document.visibilityState!=='visible')return;if($('auto').checked)refresh();pull()},60000);
 // ---- backup ----
 $('exp').addEventListener('click',()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='golden-hug-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click()});
 $('imp').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.tx))throw 0;S=d;render();save();$('saveState').textContent='นำเข้าข้อมูลแล้ว'}catch(x){$('saveState').textContent='ไฟล์ไม่ถูกต้อง'}e.target.value=''});
-['cur','fx','fee'].forEach(k=>$(k).addEventListener('change',e=>{if(k==='fx')$('autoFx').checked=false;const v=parseFloat(e.target.value);if(!isNaN(v)){S[k]=v;render();save()}}));
+['cur','fx','fee'].forEach(k=>$(k).addEventListener('change',e=>{if(k==='fx')$('autoFx').checked=false;const v=parseFloat(e.target.value);if(!isNaN(v)){S[k]=v;render();k==='fee'?save():saveLocal()}}));
 let editId=null;
 function resetForm(){editId=null;$('form').reset();$('fBtn').textContent='เพิ่มรายการ';$('fCancel').style.display='none';$('fDate').value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16)}
 $('form').addEventListener('submit',e=>{e.preventDefault();const thb=+$('fThb').value,p=+$('fPrice').value;if(!(thb>0&&p>0))return;
@@ -196,7 +228,7 @@ $('rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
   if(b.dataset.e){const x=S.tx.find(y=>y.id===+b.dataset.e);editId=x.id;$('fType').value=x.t;$('fDate').value=x.d;$('fThb').value=x.thb;$('fPrice').value=x.p;$('fOz').value=x.oz;
     $('fBtn').textContent='บันทึกการแก้ไข';$('fCancel').style.display='';$('form').scrollIntoView({behavior:'smooth',block:'center'})}});
 $('tUndo').addEventListener('click',()=>{if(undo){S.tx=undo;undo=null;render();save()}$('toast').style.display='none'});
-resetForm();render();refresh();
+resetForm();render();refresh();if(tok)pull();else setSync('ยังไม่ได้ซิงก์ — กด ซิงก์ เพื่อเชื่อมต่อ');
 }
 </script>
 </body>
