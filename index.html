@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Golden Hug">
+<meta name="theme-color" content="#b98a1c">
+<title>Golden Hug</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, exact money tool — a personal ledger, not a trading terminal
+   IDEA: a gold passbook (สมุดบัญชีทอง): one stamped balance, then dated lines
+   PICTURE: big live P/L readout beside a chart of every buy price vs today's price & average cost
+   COLOUR and TYPE: white ground, deep ink, bullion gold #b98a1c field; green/red only for P/L. Prompt + IBM Plex Sans Thai
+   LAYOUT: gold band with readout + chart, inputs row, then ledger table and add form */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#121110);--ink:light-dark(#1b1712,#f1ece2);--mute:light-dark(#6d655a,#a49a8b);
+--gold:light-dark(#b98a1c,#d6a83a);--goldbg:light-dark(#f6eedb,#211b10);--line:light-dark(#e6dfd1,#2e2920);--card:light-dark(#fffdf8,#1a1814);
+--up:light-dark(#0f7a3d,#3fc47a);--dn:light-dark(#c0362c,#ff6b5e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans Thai",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(22px,3.5vw,48px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2{font-family:Prompt,sans-serif;font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(26px,3.6vw,36px)}h2{font-size:22px;margin-bottom:12px}
+.hero{background:var(--goldbg);border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:18px}
+.sub{color:var(--mute);font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:stretch}
+.read{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.big{font:600 clamp(34px,6vw,52px)/1.05 Prompt,sans-serif;white-space:nowrap}
+.pct{font:600 18px Prompt,sans-serif}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px}
+.kv div{border-top:1px solid var(--line);padding-top:8px}
+.kv b{display:block;font:600 18px Prompt,sans-serif;white-space:nowrap}
+.kv span{font-size:13px;color:var(--mute)}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.fig{position:relative;min-height:320px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mute);padding:4px 6px 0}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px}
+.inputs{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px;align-items:end}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--mute);gap:4px}
+input,select{font:16px "IBM Plex Sans Thai",sans-serif;height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:160px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+button{font:500 15px "IBM Plex Sans Thai",sans-serif;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.pri{background:var(--gold);border-color:var(--gold);color:#fff}
+.note{font-size:13px;color:var(--mute);margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{font-weight:500;color:var(--mute);font-size:13px;text-align:right;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+.tag{font-size:13px;font-weight:600;padding:2px 8px;border-radius:6px;background:light-dark(#e6f4ea,#14301f);color:var(--up)}
+.tag.s{background:light-dark(#fbe7e4,#3a1814);color:var(--dn)}
+.ic{min-height:36px;padding:0 10px;font-size:13px}
+form.add{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:var(--goldbg);border:1px solid var(--line);border-radius:14px;padding:16px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;display:none;gap:12px;align-items:center}
+.toast button{min-height:32px;background:transparent;color:var(--bg);border-color:var(--mute)}
+.scroll{overflow-x:auto}
+.chk{flex-direction:row;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--ink)}.chk input{width:20px;height:20px}
+.live{font-size:14px;margin:12px 0 0;color:var(--mute)}.live.ok{color:var(--up)}.live.err{color:var(--dn)}
+label.file{display:inline-flex;vertical-align:middle;font-size:13px;flex-direction:row;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer;padding:0 10px;min-height:36px}
+@media(max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}.stack tr{border-bottom:1px solid var(--line)}input,select{width:100%}label{flex:1 1 140px}}
+@media(prefers-reduced-motion:no-preference){.dot{transition:r .2s}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<section class="band hero"><div class="wrap">
+  <div class="top"><h1>Golden Hug <span style="font-size:.5em;font-weight:500;color:var(--mute)">· บันทึกทอง MTS-GOLD</span></h1><span class="sub"><span id="saveState">ข้อมูลเก็บในเบราว์เซอร์นี้</span> · <button class="ic" id="exp" type="button">สำรองข้อมูล</button> <label class="ic file">นำเข้า<input id="imp" type="file" accept=".json,application/json" hidden></label></span></div>
+  <div class="grid">
+    <div class="read">
+      <div><div class="sub">กำไร/ขาดทุนตอนนี้ (ยังไม่ขาย)</div><div class="big" id="pl">–</div><div class="pct" id="plp"></div></div>
+      <div class="kv">
+        <div><b id="inv">–</b><span>เงินลงทุนคงเหลือ (บาท)</span></div>
+        <div><b id="val">–</b><span>มูลค่าตอนนี้ (บาท)</span></div>
+        <div><b id="oz">–</b><span id="ozs">ทองที่ถือ</span></div>
+        <div><b id="avg">–</b><span>ต้นทุนเฉลี่ย (USD/oz)</span></div>
+        <div><b id="be">–</b><span>ราคาคุ้มทุน (USD/oz)</span></div>
+        <div><b id="real">–</b><span>กำไรที่ขายแล้ว (บาท)</span></div>
+      </div>
+    </div>
+    <div class="chart">
+      <div class="fig" id="fig"><svg id="svg" role="img" aria-label="ราคาที่ซื้อแต่ละครั้งเทียบราคาปัจจุบันและต้นทุนเฉลี่ย"></svg></div>
+      <div class="legend"><span><i style="background:var(--gold)"></i>ราคาที่ซื้อ (ขนาดจุด = จำนวนเงิน)</span><span><i style="background:var(--ink)"></i>ราคาปัจจุบัน</span><span><i style="background:var(--mute)"></i>ต้นทุนเฉลี่ย</span></div>
+    </div>
+  </div>
+  <div class="inputs">
+    <label>ราคาทองตอนนี้ (USD/oz)<input id="cur" type="number" step="0.01" inputmode="decimal"></label>
+    <label>อัตราแลกเปลี่ยน (บาท/USD)<input id="fx" type="number" step="0.01" inputmode="decimal"></label>
+    <label>ค่าธรรมเนียมขาย (%)<input id="fee" type="number" step="0.01" inputmode="decimal"></label>
+    <button class="pri" id="refresh" type="button">ดึงราคาล่าสุด</button>
+    <label class="chk"><input type="checkbox" id="auto" checked> อัปเดตทุก 1 นาที</label>
+    <label class="chk"><input type="checkbox" id="autoFx" checked> ดึงเรทเงินด้วย</label>
+  </div>
+  <p class="live" id="live"></p>
+  <p class="note">ราคาทองเป็นราคา spot ตลาดโลกจาก gold-api.com และเรทเงินจาก open.er-api.com (อัปเดตวันละครั้ง) ซึ่งอาจต่างจากราคาขายในแอป MTS เล็กน้อย ถ้าจะให้ตรงกับแอป ให้กรอกราคาเองหรือเอาติ๊ก "ดึงเรทเงินด้วย" ออกแล้วใส่เรทเอง</p>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>รายการซื้อ-ขาย</h2>
+  <form class="add" id="form">
+    <label>ประเภท<select id="fType"><option value="buy">ซื้อ</option><option value="sell">ขาย</option></select></label>
+    <label>วันที่-เวลา<input id="fDate" type="datetime-local" required style="width:210px"></label>
+    <label>จำนวนเงิน (บาท)<input id="fThb" type="number" step="0.01" required></label>
+    <label>ราคาที่ได้ (USD/oz)<input id="fPrice" type="number" step="0.01" required></label>
+    <label>น้ำหนัก (oz)<input id="fOz" type="number" step="0.0001" placeholder="เว้นว่าง = คำนวณให้"></label>
+    <button class="pri" id="fBtn">เพิ่มรายการ</button>
+    <button type="button" id="fCancel" style="display:none">ยกเลิกแก้ไข</button>
+  </form>
+  <div style="margin-top:18px">
+    <table class="stack"><thead><tr><th>วันที่</th><th>ประเภท</th><th>บาท</th><th>ราคา USD/oz</th><th>น้ำหนัก oz</th><th>กำไร/ขาดทุน</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+  </div>
+  <p class="note">กำไรต่อรายการ = มูลค่าตอนนี้ของทองล็อตนั้น − เงินที่จ่าย (ไม่รวมค่าธรรมเนียม) · การขายคิดต้นทุนแบบถัวเฉลี่ย · 1 oz = 31.1035 กรัม</p>
+</div></section>
+<div class="toast" id="toast"><span id="tMsg"></span><button id="tUndo" type="button">เลิกทำ</button></div>
+
+<script id="state" type="application/json">{"cur":0,"fx":null,"fee":0,"tx":[]}</script>
+<script>
+{
+const $=id=>document.getElementById(id);
+let S=JSON.parse($('state').textContent);
+try{const l=JSON.parse(localStorage.getItem('goldbook')||'null');if(l&&l.tx&&(l.ts||0)>(S.ts||0))S=l}catch(e){}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const n=(v,d=2)=>Number(v).toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sg=v=>(v>0?'+':v<0?'−':'')+n(Math.abs(v));
+const impliedFx=()=>{const b=S.tx.filter(x=>x.t==='buy');const a=b.reduce((s,x)=>s+x.thb,0),c=b.reduce((s,x)=>s+x.oz*x.p,0);return c?a/c:34};
+if(!S.fx)S.fx=+impliedFx().toFixed(2);
+const sorted=()=>[...S.tx].sort((a,b)=>a.d<b.d?-1:1);
+function calc(){let oz=0,cost=0,real=0;const fee=(S.fee||0)/100;
+  for(const x of sorted()){if(x.t==='buy'){oz+=x.oz;cost+=x.thb}else{const avg=oz?cost/oz:0,q=Math.min(x.oz,oz);real+=x.thb-avg*q;cost-=avg*q;oz-=q}}
+  const val=oz*S.cur*S.fx*(1-fee);return{oz,cost,real,val,pl:val-cost,avgUsd:oz?cost/oz/S.fx:0,be:oz?cost/(oz*S.fx*(1-fee)):0}}
+function render(){
+  const r=calc(),cls=v=>v>=0?'up':'dn';
+  $('pl').textContent=sg(r.pl)+' ฿';$('pl').className='big '+cls(r.pl);
+  $('plp').textContent=r.cost?sg(r.pl/r.cost*100)+'%':'';$('plp').className='pct '+cls(r.pl);
+  $('inv').textContent=n(r.cost);$('val').textContent=n(r.val);
+  $('oz').textContent=n(r.oz,4)+' oz';$('ozs').textContent='ทองที่ถือ ≈ '+n(r.oz*31.1035,3)+' กรัม';
+  $('avg').textContent=n(r.avgUsd);$('be').textContent=n(r.be);
+  $('real').textContent=sg(r.real);$('real').className=r.real?cls(r.real):'';
+  $('cur').value=S.cur;$('fx').value=S.fx;$('fee').value=S.fee||0;
+  $('rows').innerHTML=sorted().reverse().map(x=>{const pl=x.t==='buy'?x.oz*S.cur*S.fx*(1-(S.fee||0)/100)-x.thb:null;
+    const d=new Date(x.d);const ds=isNaN(d)?esc(x.d):d.toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<tr><td>${ds}</td><td><span class="tag ${x.t==='sell'?'s':''}">${x.t==='buy'?'ซื้อ':'ขาย'}</span></td><td>${n(x.thb)}</td><td>${n(x.p)}</td><td>${n(x.oz,4)}</td>
+    <td class="${pl==null?'':cls(pl)}">${pl==null?'—':sg(pl)}</td><td><button class="ic" data-e="${x.id}" type="button">แก้</button> <button class="ic" data-d="${x.id}" type="button">ลบ</button></td></tr>`}).join('')
+    ||'<tr><td colspan="7" style="text-align:center;color:var(--mute)">ยังไม่มีรายการ — เพิ่มรายการซื้อแรกด้านบน</td></tr>';
+  draw();}
+const svg=$('svg');
+function draw(){const W=svg.clientWidth,H=svg.clientHeight;if(!W)return;const tx=sorted().filter(x=>x.t==='buy');const r=calc();
+  if(!tx.length){svg.innerHTML='';return}
+  const narrow=W<520,L=narrow?44:58,R=narrow?10:16,T=16,B=30;
+  const ps=tx.map(x=>x.p).concat(S.cur,r.avgUsd||S.cur);let lo=Math.min(...ps),hi=Math.max(...ps),pad=(hi-lo)*.12||50;lo-=pad;hi+=pad;
+  const ts=tx.map(x=>+new Date(x.d)),t0=Math.min(...ts),t1=Math.max(...ts)+1,span=t1-t0||1;
+  const X=t=>L+(t-t0)/span*(W-L-R-14)+7,Y=p=>T+(hi-p)/(hi-lo)*(H-T-B);
+  const mx=Math.max(...tx.map(x=>x.thb));let g='';
+  for(let i=0;i<=4;i++){const p=lo+(hi-lo)*i/4,y=Y(p);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="12" fill="var(--mute)">${Math.round(p).toLocaleString()}</text>`}
+  const days=narrow?3:5;for(let i=0;i<=days;i++){const t=t0+span*i/days;g+=`<text x="${X(t)}" y="${H-8}" text-anchor="middle" font-size="12" fill="var(--mute)">${new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short'})}</text>`}
+  const line=(p,c,lab,dash)=>{const y=Y(p);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2" ${dash?'stroke-dasharray="6 5"':''}/><text x="${W-R-4}" y="${y-6}" text-anchor="end" font-size="12" fill="${c}" paint-order="stroke" stroke="var(--card)" stroke-width="4">${lab} ${n(p)}</text>`};
+  if(r.avgUsd)g+=line(r.avgUsd,'var(--mute)','ต้นทุนเฉลี่ย',true);
+  g+=line(S.cur,'var(--ink)','ตอนนี้',false);
+  g+=tx.map(x=>{const rad=4+8*Math.sqrt(x.thb/mx);return `<circle class="dot" cx="${X(+new Date(x.d))}" cy="${Y(x.p)}" r="${rad}" fill="var(--gold)" fill-opacity=".85" stroke="var(--card)" stroke-width="2"><title>${n(x.thb)} บาท @ ${n(x.p)}</title></circle>`}).join('');
+  svg.innerHTML=g}
+const ro=new ResizeObserver(draw);ro.observe(svg);
+
+let undo=null;
+function save(){S.ts=Date.now();try{localStorage.setItem('goldbook',JSON.stringify(S));$('saveState').textContent='บันทึกในเบราว์เซอร์นี้แล้ว'}catch(e){$('saveState').textContent='บันทึกไม่ได้ — กดสำรองข้อมูลไว้'}}
+// ---- live prices ----
+async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
+async function refresh(){const st=$('live');st.textContent='กำลังดึงราคา…';st.className='live';
+  const [g,f]=await Promise.allSettled([getJSON('https://api.gold-api.com/price/XAU'),getJSON('https://open.er-api.com/v6/latest/USD')]);
+  const msg=[];
+  if(g.status==='fulfilled'&&+g.value.price>0){S.cur=+(+g.value.price).toFixed(2);const t=new Date(g.value.updatedAt||Date.now());msg.push('ทอง '+n(S.cur)+' USD/oz ('+t.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+')')}else msg.push('ดึงราคาทองไม่ได้');
+  if($('autoFx').checked){if(f.status==='fulfilled'&&f.value.rates&&f.value.rates.THB){S.fx=+f.value.rates.THB.toFixed(2);msg.push('เรท '+S.fx+' บาท/USD')}else msg.push('ดึงเรทเงินไม่ได้')}
+  const ok=g.status==='fulfilled';st.textContent=msg.join(' · ');st.className='live '+(ok?'ok':'err');
+  if(!ok)st.textContent+=' — กรอกราคาเองได้';render();save()}
+$('refresh').addEventListener('click',refresh);
+let tick=setInterval(()=>{if($('auto').checked&&document.visibilityState==='visible')refresh()},60000);
+// ---- backup ----
+$('exp').addEventListener('click',()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='golden-hug-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click()});
+$('imp').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.tx))throw 0;S=d;render();save();$('saveState').textContent='นำเข้าข้อมูลแล้ว'}catch(x){$('saveState').textContent='ไฟล์ไม่ถูกต้อง'}e.target.value=''});
+['cur','fx','fee'].forEach(k=>$(k).addEventListener('change',e=>{if(k==='fx')$('autoFx').checked=false;const v=parseFloat(e.target.value);if(!isNaN(v)){S[k]=v;render();save()}}));
+let editId=null;
+function resetForm(){editId=null;$('form').reset();$('fBtn').textContent='เพิ่มรายการ';$('fCancel').style.display='none';$('fDate').value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16)}
+$('form').addEventListener('submit',e=>{e.preventDefault();const thb=+$('fThb').value,p=+$('fPrice').value;if(!(thb>0&&p>0))return;
+  let oz=parseFloat($('fOz').value);if(!(oz>0))oz=+(thb/(p*S.fx)).toFixed(4);
+  const x={id:editId||Date.now(),t:$('fType').value,d:$('fDate').value,thb,p,oz};
+  S.tx=editId?S.tx.map(y=>y.id===editId?x:y):[...S.tx,x];resetForm();render();save()});
+$('fCancel').addEventListener('click',resetForm);
+$('rows').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.d){const id=+b.dataset.d;undo=S.tx;S.tx=S.tx.filter(x=>x.id!==id);render();save();
+    $('tMsg').textContent='ลบรายการแล้ว';$('toast').style.display='flex';setTimeout(()=>$('toast').style.display='none',6000)}
+  if(b.dataset.e){const x=S.tx.find(y=>y.id===+b.dataset.e);editId=x.id;$('fType').value=x.t;$('fDate').value=x.d;$('fThb').value=x.thb;$('fPrice').value=x.p;$('fOz').value=x.oz;
+    $('fBtn').textContent='บันทึกการแก้ไข';$('fCancel').style.display='';$('form').scrollIntoView({behavior:'smooth',block:'center'})}});
+$('tUndo').addEventListener('click',()=>{if(undo){S.tx=undo;undo=null;render();save()}$('toast').style.display='none'});
+resetForm();render();refresh();
+}
+</script>
+</body>
+</html>
