@@ -175,7 +175,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
       </div>
       <div class="stats">
         <div><b class="num" id="grams">–</b><span>ทองที่ถือ</span></div>
-        <div><b class="num" id="avg">–</b><span>ต้นทุน $/oz</span></div>
+        <div><b class="num" id="avg">–</b><span>ราคาซื้อเฉลี่ย $/oz</span></div>
         <div><b class="num" id="real">–</b><span>กำไรที่ขายแล้ว ฿</span></div>
       </div>
     </section>
@@ -189,7 +189,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
     <section class="card chart">
       <h3>ราคาที่ซื้อแต่ละครั้ง</h3>
       <div class="fig"><svg id="svg" role="img" aria-label="ราคาที่ซื้อแต่ละครั้งเทียบราคาปัจจุบันและต้นทุนเฉลี่ย"></svg></div>
-      <div class="legend"><span><i style="background:var(--gold);height:8px;width:8px;border-radius:50%"></i>ราคาที่ซื้อ</span><span><i style="background:var(--ink)"></i>ตอนนี้ <b class="num" id="lgCur"></b></span><span><i style="background:var(--faint)"></i>ต้นทุน <b class="num" id="lgAvg"></b></span></div>
+      <div class="legend"><span><i style="background:var(--gold);height:8px;width:8px;border-radius:50%"></i>ราคาที่ซื้อ</span><span><i style="background:var(--ink)"></i>ตอนนี้ <b class="num" id="lgCur"></b></span><span><i style="background:var(--faint)"></i>ราคาซื้อเฉลี่ย <b class="num" id="lgAvg"></b></span></div>
     </section>
   </div>
 
@@ -264,9 +264,9 @@ const pref=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:v==='1'}
 $('auto').checked=pref('gh_auto',true);$('autoFx').checked=pref('gh_autofx',true);
 const sorted=()=>[...S.tx].sort((a,b)=>a.d<b.d?-1:1);
 const feeK=()=>1-(S.fee||0)/100;
-function calc(){let oz=0,cost=0,real=0;
-  for(const x of sorted()){if(x.t==='buy'){oz+=x.oz;cost+=x.thb}else{const avg=oz?cost/oz:0,q=Math.min(x.oz,oz);real+=x.thb-avg*q;cost-=avg*q;oz-=q}}
-  const val=oz*S.cur*S.fx*feeK();return{oz,cost,real,val,pl:val-cost,avgUsd:oz?cost/oz/S.fx:0,be:oz?cost/(oz*S.fx*feeK()):0}}
+function calc(){let oz=0,cost=0,usd=0,real=0;
+  for(const x of sorted()){if(x.t==='buy'){oz+=x.oz;cost+=x.thb;usd+=x.oz*x.p}else{const avg=oz?cost/oz:0,avgU=oz?usd/oz:0,q=Math.min(x.oz,oz);real+=x.thb-avg*q;cost-=avg*q;usd-=avgU*q;oz-=q}}
+  const val=oz*S.cur*S.fx*feeK();return{oz,cost,real,val,pl:val-cost,avgUsd:oz?usd/oz:0,be:oz?cost/(oz*S.fx*feeK()):0}}
 const fmtD=(d,o)=>{const x=new Date(d);return isNaN(x)?esc(d):x.toLocaleString('th-TH',o)};
 const icBuy='<svg class="i"><use href="#i-in"/></svg>';
 const icSell='<svg class="i"><use href="#i-out"/></svg>';
