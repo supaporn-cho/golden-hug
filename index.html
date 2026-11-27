@@ -353,7 +353,7 @@ async function refresh(){if(fetching)return;fetching=true;const st=$('live');$('
   const ok=g.status==='fulfilled'&&+g.value.price>0;
   if(ok)S.cur=+(+g.value.price).toFixed(2);
   if(f.status==='fulfilled'&&f.value.rates&&f.value.rates.THB)S.fx=+f.value.rates.THB.toFixed(2);
-  st.className=ok?'':'err';st.textContent=ok?'ราคาสด · อัปเดต '+hhmm()+' · '+n(S.fx)+' ฿/$':'ดึงราคาไม่ได้ · แก้ราคาเองได้ในตั้งค่า';
+  st.className=ok?'':'err';st.textContent=ok?'Live price · อัปเดต '+hhmm()+' · '+n(S.fx)+' ฿/$':'ดึงราคาไม่ได้ · แก้ราคาเองได้ในตั้งค่า';
   $('refresh').classList.remove('spin');fetching=false;render();saveLocal()}
 $('refresh').addEventListener('click',refresh);
 setInterval(()=>{if(document.visibilityState!=='visible')return;if($('auto').checked)refresh();pull()},60000);
