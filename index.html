@@ -8,25 +8,25 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Golden Hug">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#f6f1fa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#140c1a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f4f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
 <title>Golden Hug</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234a1f63'/%3E%3Ccircle cx='32' cy='33' r='13' fill='%23f5c451'/%3E%3Cpath d='M14 30c0 12 8 21 18 21s18-9 18-21' fill='none' stroke='%23ff9fb4' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%234a1f63'/%3E%3Ccircle cx='32' cy='33' r='13' fill='%23f5c451'/%3E%3Cpath d='M14 30c0 12 8 21 18 21s18-9 18-21' fill='none' stroke='%23ff9fb4' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231a1a1a'/%3E%3Ccircle cx='32' cy='33' r='13' fill='%23f5c451'/%3E%3Cpath d='M14 30c0 12 8 21 18 21s18-9 18-21' fill='none' stroke='%23ff9fb4' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231a1a1a'/%3E%3Ccircle cx='32' cy='33' r='13' fill='%23f5c451'/%3E%3Cpath d='M14 30c0 12 8 21 18 21s18-9 18-21' fill='none' stroke='%23ff9fb4' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* VOICE: warm, friendly personal savings app — a pocket companion, calm not trader-y
    IDEA: a little gold coin held in a hug; the balance card is the "hug" that holds your gold
    PICTURE: plum balance card with a large P/L and breakeven meter, then a live price pill and the buy chart
-   COLOUR and TYPE: lilac-white ground, deep plum card, gold coin accent, pink hug accent; Anuphan throughout
+   COLOUR and TYPE: light grey ground, charcoal card, gold coin accent, pink hug accent; Anuphan throughout
    LAYOUT: mobile-first single column with bottom-right add button; on wide screens card+chart left, list right */
 :root{color-scheme:light dark;
---bg:light-dark(#f6f1fa,#140c1a);--card:light-dark(#ffffff,#1e1426);--ink:light-dark(#24152e,#f4ecf8);--mute:light-dark(#7b6a88,#a995b8);
---line:light-dark(#ebe2f1,#2f2239);--soft:light-dark(#f1e9f7,#271b31);
---plum:light-dark(#4a1f63,#3a1650);--plum2:light-dark(#6b2f8c,#5a2577);--gold:#f5c451;--gold2:light-dark(#b8860b,#f5c451);--pink:#ff9fb4;
+--bg:light-dark(#f4f4f2,#0d0d0d);--card:light-dark(#ffffff,#181818);--ink:light-dark(#171717,#f3f1ec);--mute:light-dark(#6e6a62,#a19c92);
+--line:light-dark(#e6e4df,#2a2a2a);--soft:light-dark(#efeeea,#232323);
+--plum:light-dark(#1a1a1a,#1e1e1e);--btn:light-dark(#1a1a1a,#f5c451);--btnInk:light-dark(#ffffff,#1a1300);--acc:light-dark(#1a1a1a,#f5c451);--gold:#f5c451;--gold2:light-dark(#a87a0a,#f5c451);--pink:#ff9fb4;
 --up:light-dark(#11845a,#45d69a);--dn:light-dark(#d4384c,#ff7487);--upc:#7ff0bd;--dnc:#ffa0ad;
---r:20px;--sh:0 1px 2px rgba(40,10,60,.06),0 8px 24px rgba(40,10,60,.07)}
+--r:20px;--sh:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html{scroll-padding-top:72px}
@@ -50,7 +50,7 @@ button{cursor:pointer}
 @media(min-width:960px){.wrap{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start;gap:24px}.left{position:sticky;top:76px}}
 .left,.right{display:grid;gap:16px}
 
-.hero{position:relative;overflow:hidden;background:var(--plum);color:#fff;border-radius:28px;padding:22px 22px 20px;box-shadow:0 12px 32px rgba(74,31,99,.28)}
+.hero{position:relative;overflow:hidden;background:var(--plum);color:#fff;border-radius:28px;padding:22px 22px 20px;box-shadow:0 12px 32px rgba(0,0,0,.25);border:1px solid light-dark(transparent,#2c2c2c)}
 .hero::before{content:"";position:absolute;right:-46px;top:-56px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe08a,var(--gold) 45%,#c9971f 100%);opacity:.95}
 .hero::after{content:"";position:absolute;right:-70px;top:-26px;width:190px;height:130px;border-radius:50%;border:12px solid var(--pink);border-top-color:transparent;border-left-color:transparent;transform:rotate(18deg);opacity:.9}
 .hero>*{position:relative;z-index:1}
@@ -105,11 +105,11 @@ button{cursor:pointer}
 .empty{text-align:center;padding:36px 16px;color:var(--mute)}
 .empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
 
-.fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:6;display:flex;align-items:center;gap:8px;height:56px;padding:0 22px 0 18px;border-radius:99px;border:0;background:var(--plum2);color:#fff;font-weight:600;font-size:16px;box-shadow:0 10px 24px rgba(74,31,99,.35)}
+.fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:6;display:flex;align-items:center;gap:8px;height:56px;padding:0 22px 0 18px;border-radius:99px;border:0;background:var(--btn);color:var(--btnInk);font-weight:600;font-size:16px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .fab svg{width:22px;height:22px}
 
 dialog{border:0;padding:0;background:var(--card);color:var(--ink);width:min(520px,100%);max-height:92vh;border-radius:26px;box-shadow:0 20px 60px rgba(20,0,30,.35)}
-dialog::backdrop{background:rgba(25,8,35,.45);backdrop-filter:blur(2px)}
+dialog::backdrop{background:rgba(0,0,0,.45);backdrop-filter:blur(2px)}
 @media(max-width:600px){dialog{margin:auto 0 0;max-width:100%;border-radius:26px 26px 0 0;padding-bottom:env(safe-area-inset-bottom)}}
 .sh{padding:8px 20px 20px;overflow:auto;max-height:92vh}
 .grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:4px auto 10px}
@@ -123,22 +123,20 @@ dialog::backdrop{background:rgba(25,8,35,.45);backdrop-filter:blur(2px)}
 .f{display:grid;gap:6px;margin-bottom:12px;font-size:14px;color:var(--mute)}
 .f input,.f select{height:50px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);padding:0 14px;font-size:17px;width:100%;color:var(--ink)}
 .f input.amt{height:60px;font-size:26px;font-weight:700}
-.f input:focus,button:focus-visible{outline:none;border-color:var(--plum2);box-shadow:0 0 0 3px color-mix(in srgb,var(--plum2) 25%,transparent)}
+.f input:focus,button:focus-visible{outline:none;border-color:var(--gold2);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hint{font-size:13px;color:var(--mute);margin:-4px 0 12px}
 .btn{height:52px;border-radius:15px;border:0;font-weight:600;font-size:16px;padding:0 18px}
-.btn.pri{background:var(--plum2);color:#fff;width:100%}
+.btn.pri{background:var(--btn);color:var(--btnInk);width:100%}
 .btn.ghost{background:var(--soft)}
 .btn.del{background:none;color:var(--dn);width:100%;margin-top:6px}
 .sec{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
 .sec h4{margin:0 0 6px;font-size:16px}
 .sec p,.sec ol{font-size:14px;color:var(--mute);margin:4px 0 10px;padding-left:18px}
 .sec p{padding-left:0}
-.sec a{color:var(--plum2);font-weight:600}
-:root[data-theme=dark] .sec a{color:var(--pink)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .sec a{color:var(--pink)}}
+.sec a{color:var(--gold2);font-weight:600}
 .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;font-size:15px}
-.sw input{width:22px;height:22px;accent-color:var(--plum2)}
+.sw input{width:22px;height:22px;accent-color:var(--gold2)}
 .btns{display:flex;gap:10px;flex-wrap:wrap}.btns .btn{flex:1 1 140px}
 .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9;background:var(--ink);color:var(--bg);padding:10px 10px 10px 18px;border-radius:14px;font-size:14px;display:none;gap:12px;align-items:center;box-shadow:var(--sh)}
 .toast button{height:34px;border-radius:10px;border:0;background:var(--gold);color:#3a2600;font-weight:600;padding:0 14px}
@@ -148,7 +146,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
 </head>
 <body>
 <header class="bar">
-  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#4a1f63"/><circle cx="32" cy="33" r="13" fill="#f5c451"/><circle cx="28" cy="29" r="4" fill="#ffe7a3"/><path d="M14 30c0 12 8 21 18 21s18-9 18-21" fill="none" stroke="#ff9fb4" stroke-width="6" stroke-linecap="round"/></svg>Golden Hug</div>
+  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#1a1a1a"/><circle cx="32" cy="33" r="13" fill="#f5c451"/><circle cx="28" cy="29" r="4" fill="#ffe7a3"/><path d="M14 30c0 12 8 21 18 21s18-9 18-21" fill="none" stroke="#ff9fb4" stroke-width="6" stroke-linecap="round"/></svg>Golden Hug</div>
   <button class="chip" id="syncChip" type="button"><i></i><span id="saveState">กำลังโหลด…</span></button>
   <button class="iconbtn" id="menuBtn" type="button" aria-label="ตั้งค่า"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
 </header>
@@ -180,7 +178,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
     <section class="card chart">
       <h3>ราคาที่ซื้อแต่ละครั้ง</h3>
       <div class="fig"><svg id="svg" role="img" aria-label="ราคาที่ซื้อแต่ละครั้งเทียบราคาปัจจุบันและต้นทุนเฉลี่ย"></svg></div>
-      <div class="legend"><span><i style="background:var(--gold)"></i>ราคาที่ซื้อ</span><span><i style="background:var(--plum2)"></i>ตอนนี้ <b class="num" id="lgCur"></b></span><span><i style="background:var(--pink)"></i>ต้นทุนเฉลี่ย <b class="num" id="lgAvg"></b></span></div>
+      <div class="legend"><span><i style="background:var(--gold)"></i>ราคาที่ซื้อ</span><span><i style="background:var(--acc)"></i>ตอนนี้ <b class="num" id="lgCur"></b></span><span><i style="background:var(--pink)"></i>ต้นทุนเฉลี่ย <b class="num" id="lgAvg"></b></span></div>
     </section>
   </div>
 
@@ -298,7 +296,7 @@ function draw(){const W=svg.clientWidth,H=svg.clientHeight;if(!W)return;const tx
   const days=narrow?3:4;for(let i=0;i<=days;i++){const t=t0+span*i/days;g+=`<text x="${X(t)}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--mute)">${new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short'})}</text>`}
   const line=(p,col,dash)=>{const y=Y(p);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="2" ${dash?'stroke-dasharray="5 5"':''}/>`};
   if(r.avgUsd)g+=line(r.avgUsd,'var(--pink)',true);
-  if(S.cur)g+=line(S.cur,'var(--plum2)',false);
+  if(S.cur)g+=line(S.cur,'var(--acc)',false);
   g+=tx.map(x=>{const rad=5+7*Math.sqrt(x.thb/mx);return `<circle cx="${X(+new Date(x.d))}" cy="${Y(x.p)}" r="${rad}" fill="var(--gold)" stroke="var(--card)" stroke-width="2.5"><title>${n(x.thb)} บาท @ $${n(x.p)}</title></circle>`}).join('');
   svg.innerHTML=g}
 const ro=new ResizeObserver(()=>draw());ro.observe(svg);
