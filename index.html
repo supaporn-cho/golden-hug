@@ -193,7 +193,8 @@ async function pull(){if(!tok||busy)return;busy=true;try{setSync('กำลั�
   if(!gid){gid=await findGist();if(gid)try{localStorage.setItem('gh_gist',gid)}catch(e){}}
   if(!gid){await push()}else{let g;try{g=await gh('/gists/'+gid)}catch(e){if(e.status===404){gid='';localStorage.removeItem('gh_gist');busy=false;return pull()}throw e}
     const f=g.files[FILE];if(!f){await push()}else{const txt=f.truncated?await (await fetch(f.raw_url)).text():f.content;const d=JSON.parse(txt);
-      if((d.dts||0)>(S.dts||0)){S.tx=d.tx||[];S.fee=d.fee||0;S.dts=d.dts;saveLocal();render()}else if((S.dts||0)>(d.dts||0))await push()}}
+      const rEmpty=!(d.tx&&d.tx.length),lEmpty=!S.tx.length;
+      if(rEmpty&&!lEmpty){await push()}else if(lEmpty&&!rEmpty||(d.dts||0)>(S.dts||0)){S.tx=d.tx||[];S.fee=d.fee||0;S.dts=d.dts;saveLocal();render()}else if((S.dts||0)>(d.dts||0))await push()}}
   setSync('ซิงก์แล้ว '+hhmm())}catch(e){syncErr(e)}busy=false}
 function schedulePush(){setSync('รอซิงก์…');clearTimeout(pushT);pushT=setTimeout(async()=>{if(busy){schedulePush();return}busy=true;try{await push();setSync('ซิงก์แล้ว '+hhmm())}catch(e){syncErr(e)}busy=false},1200)}
 $('syncBtn').addEventListener('click',()=>{const p=$('syncPanel');p.hidden=!p.hidden;$('tok').value='';if(!p.hidden)p.scrollIntoView({behavior:'smooth',block:'start'})});
