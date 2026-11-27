@@ -143,6 +143,37 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
 .btns{display:flex;gap:10px;flex-wrap:wrap}.btns .btn{flex:1 1 140px}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9;background:var(--ink);color:var(--bg);padding:10px 10px 10px 18px;border-radius:14px;font-size:14px;display:none;gap:12px;align-items:center;box-shadow:var(--sh)}
 .toast button{height:34px;border-radius:10px;border:0;background:var(--gold);color:#1a1405;font-weight:600;padding:0 14px}
+.sim{padding:18px 18px 16px}
+.simhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.simhead h3{margin:0;font-size:15px;font-weight:600}
+.link{border:0;background:none;color:var(--gold);font-weight:600;font-size:13px;padding:6px 0}
+.simprice{display:flex;align-items:baseline;gap:10px;margin:10px 0 4px}
+.simprice b{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.simprice span{font-size:13px;color:var(--mute)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:32px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--gold) var(--p,50%),var(--soft) var(--p,50%))}
+input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:var(--soft)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:99px;background:var(--gold)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--card);border:2px solid var(--gold);margin-top:-10px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--card);border:2px solid var(--gold)}
+.simres{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.simres div{background:var(--soft);border-radius:14px;padding:10px 12px}
+.simres span{display:block;font-size:12px;color:var(--mute)}
+.simres b{font-size:17px;font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chips button{height:34px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-size:13px;color:var(--mute)}
+.chips button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chips button:active{transform:scale(.96)}
+.tip{position:absolute;z-index:2;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.45;white-space:nowrap;transform:translate(-50%,calc(-100% - 12px));box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.tip b{font-weight:600}
+.fig svg circle.dot{transition:r .15s}
+.fig{cursor:crosshair}
+.tx.flash{animation:fl 1.4s ease}@keyframes fl{0%,40%{background:var(--goldbg)}100%{background:transparent}}
+.statbtn{all:unset;cursor:pointer;display:block}
+.statbtn:focus-visible{outline:2px solid var(--gold);border-radius:6px}
+.statbtn span::after{content:" ⇄";color:var(--faint)}
+.listhead{flex-wrap:wrap;row-gap:6px}
+.listhead .chips{margin:0}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -175,7 +206,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
         <div class="track"><div class="fill" id="beFill"></div><div class="be" id="beMark"></div></div>
       </div>
       <div class="stats">
-        <div><b class="num" id="grams">–</b><span>ทองที่ถือ</span></div>
+        <div><button class="statbtn" id="gramsBtn" type="button" title="แตะเพื่อสลับหน่วย"><b class="num" id="grams">–</b><span id="gramsLab">ทองที่ถือ</span></button></div>
         <div><b class="num" id="avg">–</b><span>ต้นทุน $/oz</span></div>
         <div><b class="num" id="real">–</b><span>กำไรที่ขายแล้ว ฿</span></div>
       </div>
@@ -188,15 +219,23 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}input::-webkit
       <button class="ibtn" id="refresh" type="button" aria-label="ดึงราคาล่าสุด"><svg class="i"><use href="#i-refresh"/></svg></button>
     </section>
 
+    <section class="card sim" id="simCard" hidden>
+      <div class="simhead"><h3>ลองจำลองราคาทอง</h3><button class="link" id="simReset" type="button">กลับไปราคาตอนนี้</button></div>
+      <div class="simprice"><b class="num" id="simPrice">–</b><span class="num" id="simPct"></span></div>
+      <input type="range" id="simR" aria-label="ราคาทองจำลอง USD ต่อ oz">
+      <div class="simres"><div><span>มูลค่าทอง</span><b class="num" id="simVal">–</b></div><div><span>กำไร/ขาดทุน</span><b class="num" id="simPL">–</b></div></div>
+      <div class="chips" id="simChips"><button type="button" data-p="-5">−5%</button><button type="button" data-p="be">คุ้มทุน</button><button type="button" data-p="5">+5%</button><button type="button" data-p="10">+10%</button></div>
+    </section>
+
     <section class="card chart">
       <h3>ราคาที่ซื้อแต่ละครั้ง</h3>
-      <div class="fig"><svg id="svg" role="img" aria-label="ราคาที่ซื้อแต่ละครั้งเทียบราคาปัจจุบันและต้นทุนเฉลี่ย"></svg></div>
+      <div class="fig" id="fig"><div class="tip" id="tip" hidden></div><svg id="svg" role="img" aria-label="ราคาที่ซื้อแต่ละครั้งเทียบราคาปัจจุบันและต้นทุนเฉลี่ย"></svg></div>
       <div class="legend"><span><i style="background:var(--gold);height:8px;width:8px;border-radius:50%"></i>ราคาที่ซื้อ</span><span><i style="background:var(--ink)"></i>ตอนนี้ <b class="num" id="lgCur"></b></span><span><i style="background:var(--faint)"></i>ต้นทุน <b class="num" id="lgAvg"></b></span></div>
     </section>
   </div>
 
   <div class="right">
-    <div class="listhead"><h2>รายการ</h2><span id="count"></span></div>
+    <div class="listhead"><h2>รายการ <span id="count"></span></h2><div class="chips" id="filt"><button type="button" data-f="all" class="on">ทั้งหมด</button><button type="button" data-f="up">กำไร</button><button type="button" data-f="dn">ขาดทุน</button></div></div>
     <section class="card list" id="rows"></section>
   </div>
 </main>
@@ -274,7 +313,7 @@ const icBuy='<svg class="i"><use href="#i-in"/></svg>';
 const icSell='<svg class="i"><use href="#i-out"/></svg>';
 function render(){
   const r=calc(),c=v=>v>=0?'up':'dn',has=r.oz>0&&S.cur>0;
-  $('val').innerHTML=has?n(r.val)+'<small>฿</small>':'0.00<small>฿</small>';
+  countTo($('val'),has?r.val:0);
   const pct=r.cost?r.pl/r.cost*100:0;
   $('pl').innerHTML=has?'<svg class="i" style="transform:rotate('+(r.pl>=0?0:180)+'deg)"><use href="#i-tri"/></svg>'+sg(r.pl)+' ฿ ('+sg(pct)+'%)':'ยังไม่มีทอง';
   $('pl').className='pill num '+(has?c(r.pl):'');
@@ -285,16 +324,20 @@ function render(){
     const lo=Math.min(S.cur,r.be)*.97,hi=Math.max(S.cur,r.be)*1.03,P=v=>(v-lo)/(hi-lo)*100;
     $('beFill').style.width=P(S.cur)+'%';$('beMark').style.left='calc('+P(r.be)+'% - 1px)'}
   else{$('beText').textContent='ราคาคุ้มทุน';$('beGap').textContent='–';$('beFill').style.width='0';$('beMark').style.left='0'}
-  $('grams').textContent=n(r.oz*31.1035,3)+' g';$('avg').textContent=r.avgUsd?n(r.avgUsd):'–';$('real').textContent=sg(r.real);$('real').className='num '+(r.real>0?'up':r.real<0?'dn':'');
+  $('grams').textContent=unitOz?n(r.oz,4)+' oz':n(r.oz*31.1035,3)+' g';$('avg').textContent=r.avgUsd?n(r.avgUsd):'–';$('real').textContent=sg(r.real);$('real').className='num '+(r.real>0?'up':r.real<0?'dn':'');
   $('curTxt').textContent=S.cur?'ทองคำ $'+n(S.cur)+' /oz':'ยังไม่มีราคา';
   $('cur').value=S.cur||'';$('fx').value=S.fx;$('fee').value=S.fee||0;
-  const list=sorted().reverse();$('count').textContent=list.length?list.length+' รายการ':'';
+  const all=sorted().reverse();$('count').textContent=all.length?'· '+all.length:'';
+  const plOf=x=>x.t==='buy'&&S.cur?x.oz*S.cur*S.fx*feeK()-x.thb:null;
+  const list=all.filter(x=>filt==='all'||(plOf(x)!=null&&(filt==='up'?plOf(x)>=0:plOf(x)<0)));
+  $('simCard').hidden=!has;if(has)simSetup(r);
   let html='',lastM='';
   for(const x of list){const m=fmtD(x.d,{month:'long',year:'numeric'});if(m!==lastM){html+=(lastM?'</div>':'')+'<div class="month">'+m+'</div><div>';lastM=m}
     const pl=x.t==='buy'&&S.cur?x.oz*S.cur*S.fx*feeK()-x.thb:null;
     html+=`<button class="tx" type="button" data-id="${esc(x.id)}"><span class="ic ${x.t==='sell'?'s':''}">${x.t==='sell'?icSell:icBuy}</span>
       <span class="m"><b class="num">${x.t==='buy'?'ซื้อ':'ขาย'} ${n(x.thb)} ฿</b><small>${fmtD(x.d,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</small><small class="num">$${n(x.p)} · ${n(x.oz,4)} oz</small></span>
       <span class="r num ${pl==null?'':c(pl)}">${pl==null?'—':sg(pl)}<small>${pl==null?'':sg(pl/x.thb*100,1)+'%'}</small></span></button>`}
+  if(!html&&all.length){$('rows').innerHTML='<div class="empty"><b>ไม่มีรายการ'+(filt==='up'?'ที่กำไร':'ที่ขาดทุน')+'ตอนนี้</b></div>';$('lgCur').textContent=S.cur?n(S.cur):'';$('lgAvg').textContent=r.avgUsd?n(r.avgUsd):'';draw();return}
   $('rows').innerHTML=html?html+'</div>':'<div class="empty"><div class="ic"><svg class="i"><use href="#i-box"/></svg></div><b>ยังไม่มีรายการ</b>กด "บันทึกรายการ" เพื่อเพิ่มการซื้อครั้งแรก</div>';
   $('lgCur').textContent=S.cur?n(S.cur):'';$('lgAvg').textContent=r.avgUsd?n(r.avgUsd):'';
   draw()}
@@ -312,9 +355,50 @@ function draw(){const W=svg.clientWidth,H=svg.clientHeight;if(!W)return;const tx
   const line=(p,col,dash)=>{const y=Y(p);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="1.5" ${dash?'stroke-dasharray="5 5"':''}/>`};
   if(r.avgUsd)g+=line(r.avgUsd,'var(--faint)',true);
   if(S.cur)g+=line(S.cur,'var(--ink)',false);
-  g+=tx.map(x=>{const rad=4+5*Math.sqrt(x.thb/mx);return `<circle cx="${X(+new Date(x.d))}" cy="${Y(x.p)}" r="${rad}" fill="var(--gold)" stroke="var(--card)" stroke-width="2" fill-opacity=".9"><title>${n(x.thb)} บาท @ $${n(x.p)}</title></circle>`}).join('');
+  pts=tx.map(x=>({x:X(+new Date(x.d)),y:Y(x.p),r:4+5*Math.sqrt(x.thb/mx),t:x}));
+  g+=pts.map((q,i)=>`<circle class="dot" data-i="${i}" cx="${q.x}" cy="${q.y}" r="${q.r}" fill="var(--gold)" stroke="var(--card)" stroke-width="2" fill-opacity=".9"/>`).join('');
   svg.innerHTML=g}
 const ro=new ResizeObserver(()=>draw());ro.observe(svg);
+let pts=[],hot=-1;
+function nearest(e){const b=svg.getBoundingClientRect(),mx=e.clientX-b.left,my=e.clientY-b.top;let best=-1,bd=30*30;
+  pts.forEach((q,i)=>{const d=(q.x-mx)**2+(q.y-my)**2;if(d<bd){bd=d;best=i}});return best}
+function showTip(i){const tip=$('tip');svg.querySelectorAll('circle.dot').forEach(c=>c.setAttribute('r',pts[+c.dataset.i].r));
+  if(i<0){tip.hidden=true;hot=-1;return}hot=i;const q=pts[i],x=q.t,pl=x.oz*S.cur*S.fx*feeK()-x.thb;
+  const c=svg.querySelector('circle.dot[data-i="'+i+'"]');if(c)c.setAttribute('r',q.r+3);
+  tip.innerHTML='<b>'+fmtD(x.d,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+'</b><br>'+n(x.thb)+' ฿ @ $'+n(x.p)+'<br><span style="color:'+(pl>=0?'var(--upc,#7ff0bd)':'#ffa0ad')+'">'+sg(pl)+' ฿</span>';
+  tip.hidden=false;const W=svg.clientWidth,lx=Math.min(Math.max(q.x,70),W-70);tip.style.left=lx+'px';tip.style.top=q.y+'px';tip.style.transform=q.y<80?'translate(-50%,14px)':''}
+svg.addEventListener('pointermove',e=>showTip(nearest(e)));
+svg.addEventListener('pointerleave',()=>showTip(-1));
+svg.addEventListener('click',e=>{const i=nearest(e);if(i<0)return;const row=document.querySelector('.tx[data-id="'+CSS.escape(String(pts[i].t.id))+'"]');
+  if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.classList.remove('flash');void row.offsetWidth;row.classList.add('flash')}});
+
+// ---- count-up ----
+function countTo(el,to){const from=+el.dataset.v||0;el.dataset.v=to;
+  const put=v=>{el.innerHTML=n(v)+'<small>฿</small>'};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||Math.abs(to-from)<.005){put(to);return}
+  const t0=performance.now(),D=600;(function step(t){const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);put(from+(to-from)*e);if(k<1)requestAnimationFrame(step)})(t0)}
+
+// ---- unit toggle ----
+let unitOz=false;try{unitOz=localStorage.getItem('gh_unit')==='oz'}catch(e){}
+$('gramsBtn').addEventListener('click',()=>{unitOz=!unitOz;try{localStorage.setItem('gh_unit',unitOz?'oz':'g')}catch(e){}render()});
+
+// ---- filter ----
+let filt='all';
+$('filt').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;filt=b.dataset.f;$('filt').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));render()});
+
+// ---- what-if simulator ----
+let simP=null,simBase=0;
+function simSetup(r){const base=S.cur;if(Math.abs(base-simBase)>.001){simBase=base;const R=$('simR');R.min=Math.floor(base*.8);R.max=Math.ceil(base*1.2);R.step=1;if(simP==null)simP=base}
+  simShow(simP??S.cur)}
+function simShow(p){const r=calc(),R=$('simR');simP=p;R.value=p;R.style.setProperty('--p',((p-R.min)/(R.max-R.min)*100)+'%');
+  const val=r.oz*p*S.fx*feeK(),pl=val-r.cost,ch=(p-S.cur)/S.cur*100;
+  $('simPrice').textContent='$'+n(p);$('simPct').textContent=Math.abs(ch)<.05?'ราคาตอนนี้':sg(ch,1)+'% จากตอนนี้';
+  $('simVal').textContent=n(val)+' ฿';$('simPL').textContent=sg(pl)+' ฿';$('simPL').className='num '+(pl>=0?'up':'dn');
+  $('simChips').querySelectorAll('button').forEach(b=>b.classList.remove('on'))}
+$('simR').addEventListener('input',e=>simShow(+e.target.value));
+$('simReset').addEventListener('click',()=>simShow(S.cur));
+$('simChips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const r=calc();
+  let p=b.dataset.p==='be'?r.be:S.cur*(1+(+b.dataset.p)/100);const R=$('simR');p=Math.min(Math.max(p,+R.min),+R.max);simShow(+p.toFixed(2));b.classList.add('on')});
 
 // ---- storage + sync ----
 let undo=null;
